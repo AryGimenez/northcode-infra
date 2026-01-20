@@ -1,0 +1,22 @@
+# /.gitignore
+# --- Secrets ---
+# Archivo usados para configurar los docker compose
+**/.env 
+
+
+# --- Flujo de Trabajo (Personal) ---
+# Ignora tus archivos de notas y fragmentos
+**/descarte.*
+
+# --- Datos de Produccion ---
+# Ignora las carpetas de datos dentro de cualquier stack
+**/npm-data/
+**/npm-letsencrypt/
+**/wireguard-config/
+
+# --- Basura de Sistema y Editores ---
+.DS_Store
+thumbs.db
+*.log
+.vscode/
+.idea/
