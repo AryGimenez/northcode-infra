@@ -22,7 +22,8 @@ services:
     cap_add: # Capabilities son permisos especiales que se le dan al contenedor
       - NET_ADMIN  # Permite que el contenedor tenga permiso de red
       - SYS_MODULE # Permite que el contenedor tenga permiso de modulos del sistema para crear un driver de red 
-      
+    devices: # <!> esto lo agrego mi asistente de id no se para que es 
+      - /dev/net/tun # Permite que el contenedor tenga acceso al tunel de red
     environment:
       - PUID=${PUID} # Identificador de usario
       - PGID=${PGID} # Identificador de grupo
