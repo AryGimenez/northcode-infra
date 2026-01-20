@@ -1,0 +1,9 @@
+# DuckDNS NorthCode
+TOKEN_NORTHCODE=5e7abc96...
+SUBDOMAINS_NORTHCODE=northcodeuy
+ 
+
+# <!> No entendi ben lo de subdominio poruqe no montevideocolors.duckdns.org
+# DuckDNS Montevideo Colors
+TOKEN_MVDCOLORS=otro_token_aca...
+SUBDOMAINS_MVDCOLORS=montevideocolors
