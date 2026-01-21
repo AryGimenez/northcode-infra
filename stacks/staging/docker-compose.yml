@@ -1,13 +1,11 @@
 # /stacks/staging/docker-compose.yml
 
-version: '3.8'
-
 services:
   snig-frontend:
     container_name: snig-web-demo
     build:
       # Ruta relativa para llegar desde /stacks/staging hasta /apps/snig-app
-      context: ../../../apps/snig-app
+      context: ../../../app/FormatearCaravana/fonten_flutter
       dockerfile: Dockerfile
     ports:
       - "${APP_PORT}:80"

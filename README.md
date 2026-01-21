@@ -86,3 +86,15 @@ graph TD
     D -->|Acceso Seguro| G[Gestión desde Artigas]
 
 ```
+
+
+
+## 🛠️ Configuración de Red (Manual)
+
+Nuestra infraestructura utiliza una arquitectura de stacks desacoplados. Para permitir la comunicación entre el **Proxy de Producción** y las **Apps de Staging**, debemos crear una red virtual persistente:
+
+```bash
+# Crear la red puente de NorthCode
+docker network create northcode-net
+```
+

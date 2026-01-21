@@ -1,5 +1,4 @@
 # /stacks/production/docker-compose.yml
-version: '3.8'
 
 services:
   # --- ACTUALIZADOR DE IP ---
