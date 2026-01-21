@@ -1,0 +1,22 @@
+# /stacks/staging/docker-compose.yml
+
+version: '3.8'
+
+services:
+  snig-frontend:
+    container_name: snig-web-demo
+    build:
+      # Ruta relativa para llegar desde /stacks/staging hasta /apps/snig-app
+      context: ../../../apps/snig-app
+      dockerfile: Dockerfile
+    ports:
+      - "${APP_PORT}:80"
+    restart: unless-stopped
+    networks:
+      - northcode-net
+    environment:
+      - NODE_ENV=${NODE_ENV}
+
+networks:
+  northcode-net:
+    external: true # Le dice a Docker que use la red que creamos antes

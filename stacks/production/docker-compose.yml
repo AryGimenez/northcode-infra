@@ -1,0 +1,62 @@
+# /stacks/production/docker-compose.yml
+version: '3.8'
+
+services:
+  # --- ACTUALIZADOR DE IP ---
+  duckdns_northcode: # Actualiza la IP de northcodeuy.duckdns.org
+    image: lscr.io/linuxserver/duckdns:latest # Imagen a la que pertenece el contenedor
+    container_name: duckdns # nombre del contenedor se ve al acer docker ps
+    network_mode: host # Aese referencia a que el contenedor use la red del para poder ver la ip publica 
+    environment:
+      - PUID=${PUID} # identificador de usario
+      - PGID=${PGID} # identificador de grupo
+      - TZ=${TZ} # Zona horaria
+      - SUBDOMAINS=${DUCKDNS_SUBDOMAINS} # Dominio
+      - TOKEN=${DUCKDNS_TOKEN} # Token traido de DuckDNS
+    restart: unless-stopped # Reinicia el contenedor si se cae
+
+  # --- VPN SEGURA (Acceso desde Artigas) ---
+  wireguard: # Wireguard es una VPN que permite acceder a la red local desde cualquier lugar
+    image: lscr.io/linuxserver/wireguard:latest # Imagen a la que pertenece el contenedor
+    container_name: wireguard # Nombre del contenedor se ve al acer docker ps
+    cap_add: # Capabilities son permisos especiales que se le dan al contenedor
+      - NET_ADMIN  # Permite que el contenedor tenga permiso de red
+      - SYS_MODULE # Permite que el contenedor tenga permiso de modulos del sistema para crear un driver de red 
+    devices: # <!> esto lo agrego mi asistente de id no se para que es 
+      - /dev/net/tun # Permite que el contenedor tenga acceso al tunel de red
+    environment:
+      - PUID=${PUID} # Identificador de usario
+      - PGID=${PGID} # Identificador de grupo
+      - TZ=${TZ} # Zona horaria
+      - SERVERURL=${WG_SERVERURL} # Dominio al que apunta en este caso es duckdns
+      - SERVERPORT=${WG_SERVERPORT} # Puerto del servicio este es el que tenes que abrir en el router
+      - PEERS=${WG_PEERS} # Peers es la conecciones genera los clientes  
+      - PEERDNS=auto # Determina como se va a comportar el DNS de los clites si se coloca auto se usa el dns de el servidor al que apunga la VPN 
+      - INTERNAL_SUBNET=10.13.13.0 # Subred
+    volumes:
+      - ./wireguard-config:/config # Aca se guardan los archivos de la vpn
+      - /lib/modules:/lib/modules # Aca se guardan los modulos del sistema
+    ports:
+      - 51820:51820/udp # Puerto del servicio este es el que tenes que abrir en el router
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1 # le dise a los paquetes como pueden volver por el tunel
+    restart: unless-stopped # Reinicia el contenedor si se cae
+
+  # --- REVERSE PROXY (El que reparte el tráfico) ---
+  nginx-proxy: # Nginx Proxy Manager es un proxy inverso que permite gestionar certificados SSL y dominios
+    image: 'jc21/nginx-proxy-manager:latest' # Imagen a la que pertenece el contenedor
+    container_name: nginx-proxy # Nombre del contenedor se ve al acer docker ps
+    restart: unless-stopped # Reinicia el contenedor si se cae
+    ports:
+      - '80:80'   # Tráfico Web normal
+      - '443:443' # Tráfico Web Seguro (SSL)
+      - '81:81'   # Panel de Administración
+    networks:
+      - northcode-net
+    volumes:
+      - ./npm-data:/data # Aca se guardan los archivos del panel
+      - ./npm-letsencrypt:/etc/letsencrypt # Aca se guardan los certificados SSL
+
+networks:
+  northcode-net:
+    external: true # Le dice a Docker que use la red que creamos antes
