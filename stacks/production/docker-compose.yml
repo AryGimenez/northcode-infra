@@ -4,7 +4,7 @@ services:
   # --- ACTUALIZADOR DE IP ---
   duckdns_northcode: # Actualiza la IP de northcodeuy.duckdns.org
     image: lscr.io/linuxserver/duckdns:latest # Imagen a la que pertenece el contenedor
-    container_name: duckdns # nombre del contenedor se ve al acer docker ps
+    container_name: duckdns_northcode # nombre del contenedor se ve al acer docker ps
     network_mode: host # Aese referencia a que el contenedor use la red del para poder ver la ip publica 
     environment:
       - PUID=${PUID} # identificador de usario
