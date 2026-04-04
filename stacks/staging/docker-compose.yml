@@ -15,6 +15,17 @@ services:
     environment:
       - NODE_ENV=${NODE_ENV}
 
+  # NUEVA APP: Veterinaria Beltramelli (React)
+  vet-core:
+    container_name: vet-core-app
+    build:
+      # Ajustamos la ruta para que encuentre el repo de la veterinaria
+      context: ../../../apps/vet-core 
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - northcode-net
+
 networks:
   northcode-net:
     external: true # Le dice a Docker que use la red que creamos antes

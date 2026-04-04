@@ -1,8 +1,11 @@
 # /.gitignore
+
 # --- Secrets ---
 # Archivo usados para configurar los docker compose
 **/.env 
 
+# EXCEPCIÓN: Permitir explícitamente los archivos de ejemplo
+!**/.env.example
 
 # --- Flujo de Trabajo (Personal) ---
 # Ignora tus archivos de notas y fragmentos

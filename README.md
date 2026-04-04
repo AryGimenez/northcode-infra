@@ -2,11 +2,6 @@
 <!> Tambien agregaria un link a la pagina web 
 
 
-
-<p align="center">
-  <img src="assets/logo-northcode.svg" alt="NorthCode Logo" width="200">
-</p>
-
 # NorthCode Infrastructure 🚀
 
 Este repositorio contiene la configuración de infraestructura como código (IaC) para los servicios de **NorthCode**. Nuestra arquitectura está diseñada para ofrecer baja latencia en Uruguay y máxima seguridad para los datos de productores rurales.
