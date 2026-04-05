@@ -20,8 +20,8 @@ services:
     container_name: vet-core-app
     build:
       # Ajustamos la ruta para que encuentre el repo de la veterinaria
-      context: ../../../apps/vet-core 
-      dockerfile: Dockerfile
+      context: ../../../apps/vet-core/apps/web-client
+      dockerfile: dockerfile
     restart: unless-stopped
     networks:
       - northcode-net
