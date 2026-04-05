@@ -15,31 +15,70 @@ services:
     restart: unless-stopped # Reinicia el contenedor si se cae
 
   # --- VPN SEGURA (Acceso desde Artigas) ---
-  wireguard: # Wireguard es una VPN que permite acceder a la red local desde cualquier lugar
-    image: lscr.io/linuxserver/wireguard:latest # Imagen a la que pertenece el contenedor
-    container_name: wireguard # Nombre del contenedor se ve al acer docker ps
-    cap_add: # Capabilities son permisos especiales que se le dan al contenedor
-      - NET_ADMIN  # Permite que el contenedor tenga permiso de red
-      - SYS_MODULE # Permite que el contenedor tenga permiso de modulos del sistema para crear un driver de red 
-    devices: # <!> esto lo agrego mi asistente de id no se para que es 
-      - /dev/net/tun # Permite que el contenedor tenga acceso al tunel de red
+
+  wireguard:
+    image: ghcr.io/wg-easy/wg-easy
+    container_name: wg-easy
     environment:
-      - PUID=${PUID} # Identificador de usario
-      - PGID=${PGID} # Identificador de grupo
-      - TZ=${TZ} # Zona horaria
-      - SERVERURL=${WG_SERVERURL} # Dominio al que apunta en este caso es duckdns
-      - SERVERPORT=${WG_SERVERPORT} # Puerto del servicio este es el que tenes que abrir en el router
-      - PEERS=${WG_PEERS} # Peers es la conecciones genera los clientes  
-      - PEERDNS=auto # Determina como se va a comportar el DNS de los clites si se coloca auto se usa el dns de el servidor al que apunga la VPN 
-      - INTERNAL_SUBNET=10.13.13.0 # Subred
+      - WG_HOST=${WG_HOST} # Tu dominio
+      - PASSWORD=${WG_PASSWORD} # Contraseña del panel de control
+      - WG_DEFAULT_DNS=${WG_DEFAULT_DNS} # DNS por defecto
+      - WG_PORT=${WG_SERVERPORT} # Puerto del servicio
     volumes:
-      - ./wireguard-config:/config # Aca se guardan los archivos de la vpn
-      - /lib/modules:/lib/modules # Aca se guardan los modulos del sistema
+      - ./wireguard-data:/etc/wireguard
     ports:
-      - 51820:51820/udp # Puerto del servicio este es el que tenes que abrir en el router
+      - "51820:51820/udp"
+      - "51821:51821/tcp" # Panel de control (lo cerraremos en el Fortinet)
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
     sysctls:
-      - net.ipv4.conf.all.src_valid_mark=1 # le dise a los paquetes como pueden volver por el tunel
-    restart: unless-stopped # Reinicia el contenedor si se cae
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv4.ip_forward=1
+    restart: unless-stopped
+  
+
+  
+  # # VPN Wirward sin interfase adiminstrativa 
+  #
+  # wireguard: # Wireguard es una VPN que permite acceder a la red local desde cualquier lugar
+  #   image: lscr.io/linuxserver/wireguard:latest # Imagen a la que pertenece el contenedor
+  #   container_name: wireguard # Nombre del contenedor se ve al acer docker ps
+  #   cap_add: # Capabilities son permisos especiales que se le dan al contenedor
+  #     - NET_ADMIN  # Permite que el contenedor tenga permiso de red
+  #     - SYS_MODULE # Permite que el contenedor tenga permiso de modulos del sistema para crear un driver de red 
+  #   devices: # <!> esto lo agrego mi asistente de id no se para que es 
+  #     - /dev/net/tun # Permite que el contenedor tenga acceso al tunel de red
+  #   environment:
+  #     - PUID=${PUID} # Identificador de usario
+  #     - PGID=${PGID} # Identificador de grupo
+  #     - TZ=${TZ} # Zona horaria
+  #     - SERVERURL=${WG_SERVERURL} # Dominio al que apunta en este caso es duckdns
+  #     - SERVERPORT=${WG_SERVERPORT} # Puerto del servicio este es el que tenes que abrir en el router
+  #     - PEERS=${WG_PEERS} # Peers es la conecciones genera los clientes  
+  #     - PEERDNS=auto # Determina como se va a comportar el DNS de los clites si se coloca auto se usa el dns de el servidor al que apunga la VPN 
+  #     - INTERNAL_SUBNET=10.13.13.0 # Subred
+  #   volumes:
+  #     - ./wireguard-config:/config # Aca se guardan los archivos de la vpn
+  #     - /lib/modules:/lib/modules # Aca se guardan los modulos del sistema
+  #   ports:
+  #     - 51820:51820/udp # Puerto del servicio este es el que tenes que abrir en el router
+  #   sysctls:
+  #     - net.ipv4.conf.all.src_valid_mark=1 # le dise a los paquetes como pueden volver por el tunel
+  #   restart: unless-stopped # Reinicia el contenedor si se cae
+
+
+
+# --- EL VIGILANTE QUE TE AVISA AL CELULAR ---
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    volumes:
+      - ./uptime-kuma-data:/app/data
+    ports:
+      - "3001:3001" # Este lo podés abrir en el Fortinet para verlo siempre
+    restart: unless-stopped
+
 
   # --- REVERSE PROXY (El que reparte el tráfico) ---
   nginx-proxy: # Nginx Proxy Manager es un proxy inverso que permite gestionar certificados SSL y dominios
@@ -56,6 +95,42 @@ services:
       - ./npm-data:/data # Aca se guardan los archivos del panel
       - ./npm-letsencrypt:/etc/letsencrypt # Aca se guardan los certificados SSL
 
+
+  # Portainer: Gestión visual de Docker, Stacks y Logs
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: always
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Permite a Portainer ver los otros contenedores
+      - portainer_data:/data # Persistencia de usuarios y configs
+    ports:
+      - "9443:9443" # Puerto HTTPS
+    networks:
+      - northcode-net
+    deploy:
+      resources:
+        limits:
+          memory: 250M # Limitamos la RAM para que no se "coma" el server
+
+  # Beszel Agent: Monitor de hardware ultra-ligero (opcional pero recomendado)
+  beszel-agent:
+    image: 'henrygd/beszel-agent:latest'
+    container_name: beszel-agent
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      PORT: 4567
+      # KEY: "aquí-iría-tu-clave-si-instalas-el-hub-luego"
+
 networks:
   northcode-net:
     external: true # Le dice a Docker que use la red que creamos antes
+
+volumes:
+  portainer_data:

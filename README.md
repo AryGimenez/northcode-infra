@@ -8,12 +8,10 @@ Este repositorio contiene la configuración de infraestructura como código (IaC
 
 ## 🌐 Arquitectura de Red
 Contamos con una infraestructura distribuida:
-- **Nodo de Cómputo:** Servidor Linux ubicado en Montevideo, protegido por un firewall perimetral **Fortinet**.
+- **Nodo de Cómputo:** Servidor Linux montado en DigitalOcean.
 - **Gestión Remota:** Administración segura desde Artigas mediante túneles **Wireguard (VPN)**.
 - **Acceso Público:** Gestión de tráfico mediante **Nginx Proxy Manager** con certificados SSL automáticos.
 
-
-<!> NO se se ve raro el despligue me gusta pero bueno el tema es que al no tener rallita y ser mas chico que los otros queda raro 
 
 <details>
   <summary><b>📂 Estructura del Proyecto</b></summary>
