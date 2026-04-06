@@ -20,7 +20,7 @@ services:
     container_name: vet-core-app
     build:
       # Ajustamos la ruta para que encuentre el repo de la veterinaria
-      context: ../../../apps/vet-core/apps/web-client
+      context: ../../../app/vet-core/apps/web-client
       dockerfile: dockerfile
     restart: unless-stopped
     networks:
@@ -29,3 +29,8 @@ services:
 networks:
   northcode-net:
     external: true # Le dice a Docker que use la red que creamos antes
+
+
+    # /home/ary/Documentos/Project/northcode-infra/stacks/staging
+    # /home/ary/Documentos/Project/apps/vet-core/apps/web-client
+    # /home/ary/Documentos/Project/app/vet-core/apps/web-client
