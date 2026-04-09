@@ -16,6 +16,7 @@
 **/npm-data/
 **/npm-letsencrypt/
 **/wireguard-config/
+**/wireguard-data/
 
 # --- Basura de Sistema y Editores ---
 .DS_Store

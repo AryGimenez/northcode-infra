@@ -20,8 +20,8 @@ services:
     image: ghcr.io/wg-easy/wg-easy
     container_name: wg-easy
     environment:
-      - WG_HOST=${WG_HOST} # Tu dominio
-      - PASSWORD=${WG_PASSWORD} # Contraseña del panel de control
+      - WG_HOST=${WG_SERVERURL} # Tu dominio
+      - PASSWORD_HASH=${WG_PASSWORD_HASH} # Contraseña del panel de control
       - WG_DEFAULT_DNS=${WG_DEFAULT_DNS} # DNS por defecto
       - WG_PORT=${WG_SERVERPORT} # Puerto del servicio
     volumes:
