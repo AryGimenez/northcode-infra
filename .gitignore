@@ -17,6 +17,7 @@
 **/npm-letsencrypt/
 **/wireguard-config/
 **/wireguard-data/
+**/uptime-kuma-data/
 
 # --- Basura de Sistema y Editores ---
 .DS_Store
