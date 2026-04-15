@@ -25,12 +25,18 @@ services:
     restart: unless-stopped
     networks:
       - northcode-net
+  # ... (aquí ya tenés snig-frontend y vet-core)
+
+  northcode-web:
+    container_name: northcode-web-app
+    build:
+      # Ajustá esta ruta a donde tengas el repo de la empresa
+      context: ../../../app/NorthCode
+      dockerfile: dockerfile
+    restart: unless-stopped
+    networks:
+      - northcode-net
 
 networks:
   northcode-net:
     external: true # Le dice a Docker que use la red que creamos antes
-
-
-    # /home/ary/Documentos/Project/northcode-infra/stacks/staging
-    # /home/ary/Documentos/Project/apps/vet-core/apps/web-client
-    # /home/ary/Documentos/Project/app/vet-core/apps/web-client
