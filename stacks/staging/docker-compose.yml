@@ -1,6 +1,8 @@
 # /stacks/staging/docker-compose.yml
 
 services:
+  # <!> Falta documentar en el redmi
+  # <DMI!> Aplicacion Demo SnigConect (Flutter)
   snig-frontend:
     container_name: snig-web-demo
     build:
@@ -27,6 +29,9 @@ services:
       - northcode-net
   # ... (aquí ya tenés snig-frontend y vet-core)
 
+
+  # <!> Falta documentar en el redmi
+  # <DMI!> Web de la empresa NorthCode (React)
   northcode-web:
     container_name: northcode-web-app
     build:
